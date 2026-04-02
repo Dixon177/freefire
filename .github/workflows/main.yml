@@ -1,4 +1,4 @@
-name: Ahmed-SmartTouch-V67
+name: Ahmed-VIP-Named-V69
 on: [push, workflow_dispatch]
 
 jobs:
@@ -8,7 +8,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create Smart Tweak
+      - name: Create Named Tweak
         run: |
           cat <<EOF > Tweak.mm
           #import <Foundation/Foundation.h>
@@ -27,7 +27,6 @@ jobs:
 
           @interface AhmedMenu : UIView
           @property (nonatomic, strong) UIView *p;
-          @property (nonatomic, strong) UIButton *b;
           @end
 
           @implementation AhmedMenu
@@ -41,23 +40,19 @@ jobs:
               return self;
           }
 
-          // هذا الكود هو اللي يحل مشكلة اللمس 100%
           - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
-              UIView *hitView = [super hitTest:point withEvent:event];
-              if (hitView == self) {
-                  return nil; // اللمسة تعبر للعبة إذا ما داس على المنيو
-              }
-              return hitView; // اللمسة تبقى للمنيو إذا داس على الزر أو القائمة
+              UIView *hv = [super hitTest:point withEvent:event];
+              return (hv == self) ? nil : hv;
           }
 
           - (void)setupUI {
-              self.b = [UIButton buttonWithType:UIButtonTypeCustom];
-              self.b.frame = CGRectMake(30, 150, 70, 70);
-              self.b.backgroundColor = [UIColor redColor];
-              self.b.layer.cornerRadius = 35;
-              [self.b setTitle:@"AHMED" forState:UIControlStateNormal];
-              [self.b addTarget:self action:@selector(toggle) forControlEvents:UIControlEventTouchUpInside];
-              [self addSubview:self.b];
+              UIButton *b = [UIButton buttonWithType:UIButtonTypeCustom];
+              b.frame = CGRectMake(30, 150, 70, 70);
+              b.backgroundColor = [UIColor redColor];
+              b.layer.cornerRadius = 35;
+              [b setTitle:@"AHMED" forState:UIControlStateNormal];
+              [b addTarget:self action:@selector(toggle) forControlEvents:UIControlEventTouchUpInside];
+              [self addSubview:b];
 
               self.p = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 480)];
               self.p.center = self.center;
@@ -71,28 +66,39 @@ jobs:
               UIScrollView *s = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 50, 300, 400)];
               [self.p addSubview:s];
 
-              NSArray *opts = @[@"F_A1", @"F_B2", @"F_C3", @"F_D4", @"F_E5", @"F_F6", @"F_G7", @"F_H8"];
-              for (int i = 0; i < opts.count; i++) {
-                  UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(20, 10+(i*50), 180, 30)];
-                  l.text = opts[i]; l.textColor = [UIColor whiteColor];
-                  [s addSubview:l];
-                  UISwitch *sw = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10+(i*50), 0, 0)];
-                  sw.tag = 101 + i;
-                  [sw addTarget:self action:@selector(sw:) forControlEvents:UIControlEventValueChanged];
-                  [s addSubview:sw];
-              }
-              s.contentSize = CGSizeMake(300, 450);
+              // تسمية الإضافات بأسماء واضحة
+              [self addOpt:@"AIM LOCK 100%" y:10 t:101 s:s];
+              [self addOpt:@"AUTO HEADSHOT" y:60 t:102 s:s];
+              [self addOpt:@"ANTENNA WIRE" y:110 t:103 s:s];
+              [self addOpt:@"SPEED HACK x2" y:160 t:104 s:s];
+              [self addOpt:@"WALL HACK" y:210 t:105 s:s];
+              [self addOpt:@"NIGHT MODE" y:260 t:106 s:s];
+              [self addOpt:@"NO RECOIL" y:310 t:107 s:s];
+              [self addOpt:@"GUEST RESET" y:360 t:108 s:s];
+
+              s.contentSize = CGSizeMake(300, 420);
+          }
+
+          - (void)addOpt:(NSString *)n y:(CGFloat)y t:(int)t s:(UIScrollView *)s {
+              UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(20, y, 180, 30)];
+              l.text = n; l.textColor = [UIColor whiteColor];
+              l.font = [UIFont boldSystemFontOfSize:14];
+              [s addSubview:l];
+              UISwitch *sw = [[UISwitch alloc] initWithFrame:CGRectMake(220, y, 0, 0)];
+              sw.tag = t;
+              [sw addTarget:self action:@selector(sw:) forControlEvents:UIControlEventValueChanged];
+              [s addSubview:sw];
           }
 
           - (void)sw:(UISwitch *)sw {
-              if (sw.tag == 101 && sw.on) _patch(0x4886610, 0x52800000);
-              if (sw.tag == 102 && sw.on) _patch(0x488656C, 0x52800008);
-              if (sw.tag == 103 && sw.on) _patch(0x4763A94, 0x52800010);
-              if (sw.tag == 104 && sw.on) _patch(0x47B2E3C, 0x52800000);
-              if (sw.tag == 105 && sw.on) _patch(0x3A2D1B0, 0x41200000);
-              if (sw.tag == 106 && sw.on) _patch(0x3B4A2C0, 0x41A00000);
-              if (sw.tag == 107 && sw.on) _patch(0x3C5B3D0, 0x42C80000);
-              if (sw.tag == 108 && sw.on) _patch(0x3D6C4E0, 0x00000000);
+              if (sw.tag == 101 && sw.on) _patch(0x4886610, 0x52800000); // AIM LOCK
+              if (sw.tag == 102 && sw.on) _patch(0x488656C, 0x52800008); // HEADSHOT
+              if (sw.tag == 103 && sw.on) _patch(0x4763A94, 0x52800010); // ANTENNA
+              if (sw.tag == 104 && sw.on) _patch(0x47B2E3C, 0x52800000); // SPEED
+              if (sw.tag == 105 && sw.on) _patch(0x3A2D1B0, 0x41200000); // WALL HACK
+              if (sw.tag == 106 && sw.on) _patch(0x3B4A2C0, 0x41A00000); // NIGHT MODE
+              if (sw.tag == 107 && sw.on) _patch(0x3C5B3D0, 0x42C80000); // NO RECOIL
+              if (sw.tag == 108 && sw.on) _patch(0x3D6C4E0, 0x00000000); // GUEST RESET
           }
 
           - (void)toggle { self.p.hidden = !self.p.hidden; }
@@ -115,10 +121,10 @@ jobs:
           xcrun -sdk iphoneos clang -dynamiclib -arch arm64 \
           -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
           -framework Foundation -framework UIKit -framework CoreGraphics -lc++ \
-          -Wno-everything -O3 Tweak.mm -o AhmedPrivate.dylib
+          -Wno-everything -O3 Tweak.mm -o AhmedVIP.dylib
 
-      - name: Upload
+      - name: Final Upload
         uses: actions/upload-artifact@v4
         with:
-          name: Ahmed-SmartTouch-Package
-          path: AhmedPrivate.dylib
+          name: Ahmed-VIP-Named-Package
+          path: AhmedVIP.dylib
